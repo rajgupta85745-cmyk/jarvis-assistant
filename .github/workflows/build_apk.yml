@@ -7,17 +7,34 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Build with Official Buildozer Docker
-        run: |
-          docker run --rm -v "$(pwd)":/home/user/hostcwd kivy/buildozer bash -c "yes | buildozer android debug"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      - name: Upload APK Artifact
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | sdkmanager --licenses || true
+
+      - name: Build with Buildozer Action
+        uses: ArtemSBulgakov/buildozer-action@v1.2.0
+        with:
+          workdir: .
+          buildozer_version: master
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Jarvis-Voice-APK
