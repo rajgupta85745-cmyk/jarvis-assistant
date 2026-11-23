@@ -2,24 +2,23 @@ name: Build Jarvis APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        with:
-          buildozer_version: stable
-          workdir: .
+      - name: Build with Official Buildozer Docker
+        run: |
+          docker run --rm -v "$(pwd)":/home/user/hostcwd kivy/buildozer android debug
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: jarvis-apk
+          name: Jarvis-Voice-APK
           path: bin/*.apk
